@@ -1,23 +1,21 @@
 import tokiumAPI from './api';
 
 class Tokium {
-    verified: boolean;
-    tokenOwner: boolean;
-    tokensOwned: number;
-    royaltiesPaid?: boolean;
-    constructor(verified: boolean, tokenOwner: boolean, tokensOwned: number, royaltiesPaid?: boolean){
-        this.verified = verified;
-        this.tokenOwner = tokenOwner;
-        this.tokensOwned = tokensOwned
-        this.royaltiesPaid = royaltiesPaid;
+    verified: boolean | undefined;
+    collectionURL: string;
+    walletAddress: string;
+    constructor(collectionURL: string, walletAddress: string){
+        this.collectionURL = collectionURL;
+        this.walletAddress = walletAddress;
     }
 
-    async getCollectionRoyalties(collectionURL: string) {
+    // Get the royalties of a collection
+    async getCollectionRoyalties() {
         const collectionRoyalties = await tokiumAPI({
-            method: 'post',
-            url: '/getCollectionRoyalties',
-            data: {
-                collectionURL
+            method: 'POST',
+            url: '/getRoyalties',
+            data:{
+                collectionLink: this.collectionURL,
             }
         }).then((res) => {
             return res.data;
@@ -27,82 +25,84 @@ class Tokium {
         return collectionRoyalties
     }
 
-    async getWalletTokens(collectionURL: string, wallet: string) {
-        const getTokens = await tokiumAPI({
-            method: 'post',
-            url: '/getTokensInWallet',
-            data: {
-                collectionURL,
-                wallet
+    // Checks whether a wallet has NFT from a collection and returns data object
+    async hasNFT() {
+        const hasNFT = await tokiumAPI({
+            method: 'POST',
+            url: '/hasNFT',
+            data:{
+                collectionLink: this.collectionURL,
+                address: this.walletAddress,
             }
         }).then((res) => {
             return res.data;
         }).catch((err) => {
             console.log(err)
         });
-        return getTokens
+        return hasNFT
     }
 
-    async getTokenHistory(collectionURL: string, wallet: string, walletTokens: string) {
-        const getHistory = await tokiumAPI({
-            method: 'post',
-            url: '/getTokenTransactionHistory',
-            data: {
-                collectionURL,
-                wallet,
-                walletTokens
-            }
+    // Gets data from previous NFT transfers
+    async previousNftTransfers(mintAddress: string) {
+        if (!mintAddress) {
+            throw new Error('Token mint address is required to call the previousNftTransfer endpoint!')
+        }
+        const previousNftTransfers = await tokiumAPI({
+            method: 'POST',
+            url: '/previousNftTransfers',
+            data:{ tokenMintAddress: mintAddress},
         }).then((res) => {
             return res.data;
         }).catch((err) => {
             console.log(err)
         });
-        return getHistory
+        return previousNftTransfers
     }
 
-    async hasPaidRoyalties(collectionURL: string, wallet: string) {
-        const { royaltiesPaid, tokensOwned } = await tokiumAPI({
-            method: 'post',
+    // Gets the data from the last transfer
+    async lastTransfer(mintAddress: string) {
+        if (!mintAddress) {
+            throw new Error('Token mint address is required to call the lastTransfer endpoint!')
+        }
+        const lastTransfer = await tokiumAPI({
+            method: 'POST',
+            url: '/lastTransfer',
+            data:{ tokenMintAddress: mintAddress},
+        }).then((res) => {
+            return res.data;
+        }).catch((err) => {
+            console.log(err)
+        });
+        return lastTransfer
+    }
+
+    // Returns royalties paid and tokens owned 
+    async hasPaidRoyalties() {
+        const verified = await tokiumAPI({
+            method: 'POST',
             url: '/hasPaidRoyalties',
             data: {
-                collectionLink: collectionURL,
-                address: wallet,
-            }
+                    collectionLink: this.collectionURL,
+                    address: this.walletAddress,
+                }
         }).then((res) => {
             return res.data;
         }).catch((err) => {
             console.log(err)
         });
-        return { royaltiesPaid, tokensOwned }
+        return verified
     }
 
-    async verifyTokenWithRoyalty(collectionURL: string, wallet: string) {
-        const { royaltiesPaid, tokensOwned } = await this.hasPaidRoyalties(collectionURL, wallet);
-       
-        tokensOwned > 0 ? this.tokenOwner === true : this.tokenOwner === false;
-        royaltiesPaid ? this.royaltiesPaid === true : this.royaltiesPaid === false;
-
-        this.tokensOwned = tokensOwned;
-
-        if (tokensOwned && royaltiesPaid) {
-            this.verified === true;
+    // Returns boolean for if validated
+    async verifyTokenWithRoyalty() {
+        const { royaltiesPaid, tokensOwned} = await this.hasPaidRoyalties();
+        if (royaltiesPaid === true && tokensOwned > 0) {
+            this.verified = true;
         } else {
-            this.verified === false;
-        }
-        return this.verified;
-    }
-
-    async verifyToken(collectionURL: string, wallet: string) {
-        const tokens = await this.getWalletTokens(collectionURL, wallet);
-        if (tokens) {
-            this.tokenOwner === true
-            this.verified === true
-        } else {
-            this.tokenOwner === false
-            this.verified === false
+            this.verified = false;
         }
         return this.verified;
     }
 }
 
-export default Tokium
+export { Tokium };
