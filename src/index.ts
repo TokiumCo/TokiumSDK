@@ -20,7 +20,7 @@ class Tokium {
         }).then((res) => {
             return res.data;
         }).catch((err) => {
-            console.log(err)
+            throw new Error(err)
         });
         return collectionRoyalties
     }
@@ -37,7 +37,7 @@ class Tokium {
         }).then((res) => {
             return res.data;
         }).catch((err) => {
-            console.log(err)
+            throw new Error(err)
         });
         return hasNFT
     }
@@ -54,7 +54,7 @@ class Tokium {
         }).then((res) => {
             return res.data;
         }).catch((err) => {
-            console.log(err)
+            throw new Error(err)
         });
         return previousNftTransfers
     }
@@ -71,7 +71,7 @@ class Tokium {
         }).then((res) => {
             return res.data;
         }).catch((err) => {
-            console.log(err)
+            throw new Error(err)
         });
         return lastTransfer
     }
@@ -88,15 +88,26 @@ class Tokium {
         }).then((res) => {
             return res.data;
         }).catch((err) => {
-            console.log(err)
+            throw new Error(err)
         });
         return verified
     }
 
-    // Returns boolean for if validated
+    // Validate token and royalties paid
     async verifyTokenWithRoyalty() {
         const { royaltiesPaid, tokensOwned} = await this.hasPaidRoyalties();
         if (royaltiesPaid === true && tokensOwned > 0) {
+            this.verified = true;
+        } else {
+            this.verified = false;
+        }
+        return this.verified;
+    }
+
+    // Validate token
+    async verifyToken() {
+        const { royaltiesPaid, tokensOwned} = await this.hasPaidRoyalties();
+        if (tokensOwned > 0) {
             this.verified = true;
         } else {
             this.verified = false;
