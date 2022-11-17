@@ -92,28 +92,6 @@ class Tokium {
         });
         return verified
     }
-
-    // Validate token and royalties paid
-    async verifyTokenWithRoyalty() {
-        const { royaltiesPaid, tokensOwned} = await this.hasPaidRoyalties();
-        if (royaltiesPaid === true && tokensOwned > 0) {
-            this.verified = true;
-        } else {
-            this.verified = false;
-        }
-        return this.verified;
-    }
-
-    // Validate token
-    async verifyToken() {
-        const { royaltiesPaid, tokensOwned} = await this.hasPaidRoyalties();
-        if (tokensOwned > 0) {
-            this.verified = true;
-        } else {
-            this.verified = false;
-        }
-        return this.verified;
-    }
 }
 
 export { Tokium };

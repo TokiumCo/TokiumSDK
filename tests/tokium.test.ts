@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import { Tokium } from '../src/index';
 
 describe('Testing index file return types', () => {
@@ -46,19 +45,6 @@ describe('Testing index file return types', () => {
         expect(typeof(hasPaidRoyalties.royaltiesPaid) == 'boolean');
         expect(typeof(hasPaidRoyalties.tokensOwned) == 'number');
     })
-
-    test('verifyTokenWithRoyalty function', async() => {
-        const verified = await tokium.verifyTokenWithRoyalty();
-        // Validate return type
-        expect(typeof(verified) == 'boolean');
-
-    })
-
-    test('verifyToken function', async() => {
-        const verified = await tokium.verifyToken();
-        // Validate return type
-        expect(typeof(verified) == 'boolean');
-    })
 })
 
 describe('Testing index file NFT owned', () => {
@@ -86,16 +72,6 @@ describe('Testing index file NFT owned', () => {
         expect(hasPaidRoyalties.royaltiesPaid === true);
         expect(hasPaidRoyalties.tokensOwned > 0);
     })
-
-    test('verifyTokenWithRoyalty function', async() => {
-        const verified = await tokium.verifyTokenWithRoyalty();
-        expect(verified === true);
-    })
-
-    test('verifyToken function', async() => {
-        const verified = await tokium.verifyToken();
-        expect(verified === true);
-    })
 })
 
 describe('Testing index file no NFT owned', () => {
@@ -115,15 +91,5 @@ describe('Testing index file no NFT owned', () => {
         // Validate return object
         expect(hasPaidRoyalties.royaltiesPaid === false);
         expect(hasPaidRoyalties.tokensOwned = 0);
-    })
-
-    test('verifyTokenWithRoyalty function', async() => {
-        const verified = await tokium.verifyTokenWithRoyalty();
-        expect(verified === false);
-    })
-
-    test('verifyToken function', async() => {
-        const verified = await tokium.verifyToken();
-        expect(verified === false);
     })
 })
