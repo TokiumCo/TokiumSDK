@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "lib": ["DOM", "ES6", "DOM.Iterable", "ScriptHost", "ES2016.Array.Include"],
-    "module": "ES6",
-    "moduleResolution": "node",
+    "target": "ES5",
+    "module": "CommonJS",
     "esModuleInterop": true,
     "declaration": true,
+    "skipLibCheck": true,
     "outDir": "./dist",
   },
-  "include": ["./src", "index.ts"],
+  "include": ["./src"],
   "exclude": ["node_modules", "dist"]
 }
