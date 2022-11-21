@@ -1,25 +1,64 @@
----
-description: Documentation for the SDK, NFT API, and Wrapper
----
+# TokiumSDK
 
-# Tokium Documentation
+## Documentation: https://app.gitbook.com/o/pWoySu95v3jwWIHfPlhd/s/dnU905UnC9QbllSb5vD9/sdk-documentation
 
-<figure><img src=".gitbook/assets/tokium_logo (2).png" alt=""><figcaption></figcaption></figure>
+## SDK Structure
 
-### API
+The Tokium SDK implements the Tokium class with collectionURL and walletAddress as constructors in addition to verified as a class variable. Functions that invoke the API are class functions. 
 
-The NFT API contains several endpoints that return information on token ownership, past transfers, and royalty payments.\
-\
-Access the API at: [https://api.tokium.co](https://api.tokium.co)
+Only Magic Eden collection URLs are supported at the moment.
 
-### SDK
+For example usage see https://app.gitbook.com/o/pWoySu95v3jwWIHfPlhd/s/dnU905UnC9QbllSb5vD9/wrapper-documentation
 
-The SDK implements requests to the API.\
-\
-Access the SDK Package at: [NPM](https://www.npmjs.com/package/@tokium.co/tokiumsdk) [GitHub](https://github.com/TokiumSOL/TokiumSDK)
+## Initialization
 
-### UI Kit
+```
+import { Tokium } from "@tokium.co/tokiumsdk";
 
-The UI kit uses the SDK to token and royalty gate routes and components of a react app. The Github repo contains a demo create-react-app with implementation of the UI kit.\
-\
-Access the UI Kit at: [NPM](https://www.npmjs.com/package/@tokium.co/tokiumwrapper) [GitHub](https://github.com/TokiumSOL/TokiumWrapper)
+const tokium = new Tokium(collectionURL, walletAddress);
+```
+
+## Class Functions
+Some class functions do not require parameters as they use the class constructor variables.
+
+### getCollectionRoyalties()
+
+Retrieves the royalties of the collection URL provided. 
+
+Returns an object `royaltiesPercent: 3.33`, with the type of value being a number.
+
+```
+const royalties = await tokium.getCollectionRoyalties()
+```
+
+### hasNFT()
+
+Returns an object containing information corresponding to the provided `walletAddress` and `collectionURL`. The object is an array with each entry corresponding to an NFT in the collection owned by the wallet.
+
+```
+const NFTs = await tokium.hasNFT();
+```
+
+### previousNFTTransfers(tokenMintAddress)
+
+Returns an object containing information about the previous NFT transfers. Requires tokenMintAddress as a parameter.
+
+```
+const previousNFTTransfers = await tokium.previousNftTransfers(tokenMintAddress);
+```
+
+### lastTransfer(tokenMintAddress)
+
+Returns an object containing information about the last transfer of the NFT. Requires `tokenMintAddress` as a parameter.
+
+```
+const lastTransfer = await tokium.lastTransfer(tokenMintAddress);
+```
+
+### hasPaidRoyalties()
+
+Returns a `boolean | undefined` for whether the wallet has paid royalties on one or more NFTs in the collection.
+
+```
+const verified = await tokium.hasPaidRoyalties();
+```
