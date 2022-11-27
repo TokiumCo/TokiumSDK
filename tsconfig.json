@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES5",
     "module": "CommonJS",
     "esModuleInterop": true,
     "declaration": true,
+    "skipLibCheck": true,
     "outDir": "./dist",
   },
   "include": ["./src"],

@@ -1,4 +1,8 @@
-import tokiumAPI from './api';
+import Axios from 'axios';
+
+const tokiumAPI = Axios.create({
+    baseURL: 'https://api.tokium.co/'
+});
 
 class Tokium {
     verified: boolean | undefined;
