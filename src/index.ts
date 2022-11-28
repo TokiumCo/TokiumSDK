@@ -147,15 +147,4 @@ class Tokium {
     }
 }
 
-async function test() {
-    const tokium = new Tokium('https://magiceden.io/marketplace/y00ts', '', '95de572f-667c-4649-ae23-62e97fbd45ba');
-
-    const listings = await tokium.getListedMagicEdenURL('LILY', 'M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K');
-
-    console.log(listings);
-}
-
-test();
-
-
 export { Tokium };
