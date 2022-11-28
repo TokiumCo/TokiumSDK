@@ -1,4 +1,4 @@
-import Axios from 'axios';
+const Axios = require('axios');
 
 const tokiumAPI = Axios.create({
     baseURL: 'https://api.tokium.co/'
@@ -147,4 +147,4 @@ class Tokium {
     }
 }
 
-export { Tokium };
+module.exports({ Tokium });
