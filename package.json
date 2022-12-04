@@ -11,7 +11,9 @@
   "scripts": {
     "build": "tsc"
   },
-  "files": ["/dist"],
+  "files": [
+    "/dist"
+  ],
   "main": "./dist/index.js",
   "dependencies": {
     "axios": "^0.27.2"

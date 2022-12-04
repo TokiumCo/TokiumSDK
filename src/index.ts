@@ -6,10 +6,10 @@ const tokiumAPI = Axios.create({
 
 class Tokium {
     verified: boolean | undefined;
-    collectionURL: string;
+    collectionLink: string;
     walletAddress: string;
-    constructor(collectionURL: string, walletAddress: string){
-        this.collectionURL = collectionURL;
+    constructor(collectionLink: string, walletAddress: string){
+        this.collectionLink = collectionLink;
         this.walletAddress = walletAddress;
     }
 
@@ -19,7 +19,7 @@ class Tokium {
             method: 'POST',
             url: '/getRoyalties',
             data:{
-                collectionLink: this.collectionURL,
+                collectionLink: this.collectionLink,
             }
         }).then((res) => {
             return res.data;
@@ -30,27 +30,24 @@ class Tokium {
     }
 
     // Checks whether a wallet has NFT from a collection and returns data object
-    async hasNFT() {
-        const hasNFT = await tokiumAPI({
+    async getOwnedCollectionNFTs() {
+        const verified = await tokiumAPI({
             method: 'POST',
-            url: '/hasNFT',
-            data:{
-                collectionLink: this.collectionURL,
+            url: '/ownedCollectionNFTs',
+            data: {
                 address: this.walletAddress,
+                collectionLink: this.collectionLink
             }
         }).then((res) => {
             return res.data;
         }).catch((err) => {
             throw new Error(err)
         });
-        return hasNFT
+        return verified
     }
 
     // Gets data from previous NFT transfers
     async previousNftTransfers(mintAddress: string) {
-        if (!mintAddress) {
-            throw new Error('Token mint address is required to call the previousNftTransfer endpoint!')
-        }
         const previousNftTransfers = await tokiumAPI({
             method: 'POST',
             url: '/previousNftTransfers',
@@ -65,9 +62,6 @@ class Tokium {
 
     // Gets the data from the last transfer
     async lastTransfer(mintAddress: string) {
-        if (!mintAddress) {
-            throw new Error('Token mint address is required to call the lastTransfer endpoint!')
-        }
         const lastTransfer = await tokiumAPI({
             method: 'POST',
             url: '/lastTransfer',
@@ -80,15 +74,66 @@ class Tokium {
         return lastTransfer
     }
 
-    // Returns royalties paid and tokens owned 
+    // Verifies if a wallet has paid royalties on one or more NFTs
     async hasPaidRoyalties() {
         const verified = await tokiumAPI({
             method: 'POST',
             url: '/hasPaidRoyalties',
             data: {
-                    collectionLink: this.collectionURL,
+                    collectionLink: this.collectionLink,
                     address: this.walletAddress,
                 }
+        }).then((res) => {
+            return res.data;
+        }).catch((err) => {
+            throw new Error(err)
+        });
+        return verified
+    }
+
+  // Verifies if wallet has paid royalties on all nfts
+  async hasPaidAllRoyalties() {
+    const verified = await tokiumAPI({
+        method: 'POST',
+        url: '/hasPaidAllRoyalties',
+        data: {
+            address: this.walletAddress,
+            collectionLink: this.collectionLink
+        }
+    }).then((res) => {
+        return res.data;
+    }).catch((err) => {
+        throw new Error(err)
+    });
+    return verified
+}
+
+    
+    // Get royalties details on all NFTs
+    async getRoyaltyDetails() {
+        const details = await tokiumAPI({
+            method: 'POST',
+            url: '/royaltyDetails',
+            data: {
+                address: this.walletAddress,
+                collectionLink: this.collectionLink
+            }
+        }).then((res) => {
+            return res.data;
+        }).catch((err) => {
+            throw new Error(err)
+        });
+        return details
+    }
+    
+    // Get the royalty status on a token address
+    async getRoyaltyOnMintAddress(mintAddress: string) {
+        const verified = await tokiumAPI({
+            method: 'POST',
+            url: '/royaltyOnMintAddress',
+            data: {
+                tokenMintAddress: mintAddress
+            }
         }).then((res) => {
             return res.data;
         }).catch((err) => {
