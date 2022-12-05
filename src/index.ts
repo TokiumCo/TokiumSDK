@@ -31,19 +31,23 @@ class Tokium {
 
     // Checks whether a wallet has NFT from a collection and returns data object
     async getOwnedCollectionNFTs() {
-        const verified = await tokiumAPI({
-            method: 'POST',
-            url: '/ownedCollectionNFTs',
-            data: {
-                address: this.walletAddress,
-                collectionLink: this.collectionLink
-            }
-        }).then((res) => {
-            return res.data;
-        }).catch((err) => {
-            throw new Error(err)
-        });
-        return verified
+        if (this.walletAddress) {
+            const verified = await tokiumAPI({
+                method: 'POST',
+                url: '/ownedCollectionNFTs',
+                data: {
+                    address: this.walletAddress,
+                    collectionLink: this.collectionLink
+                }
+            }).then((res) => {
+                return res.data;
+            }).catch((err) => {
+                throw new Error(err)
+            });
+            return verified    
+        } else {
+            return 'Provide Wallet Address!';
+        }
     }
 
     // Gets data from previous NFT transfers
