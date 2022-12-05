@@ -7,8 +7,8 @@ const tokiumAPI = Axios.create({
 class Tokium {
     verified: boolean | undefined;
     collectionLink: string;
-    walletAddress: string;
-    constructor(collectionLink: string, walletAddress: string){
+    walletAddress: string | undefined;
+    constructor(collectionLink: string, walletAddress: string | undefined){
         this.collectionLink = collectionLink;
         this.walletAddress = walletAddress;
     }
