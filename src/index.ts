@@ -46,75 +46,92 @@ class Tokium {
             });
             return verified    
         } else {
-            return 'Provide Wallet Address!';
+            console.log('Provide Wallet Address!');
         }
     }
 
     // Gets data from previous NFT transfers
     async previousNftTransfers(mintAddress: string) {
-        const previousNftTransfers = await tokiumAPI({
-            method: 'POST',
-            url: '/previousNftTransfers',
-            data:{ tokenMintAddress: mintAddress},
-        }).then((res) => {
-            return res.data;
-        }).catch((err) => {
-            throw new Error(err)
-        });
-        return previousNftTransfers
+        if (mintAddress) {
+            const previousNftTransfers = await tokiumAPI({
+                method: 'POST',
+                url: '/previousNftTransfers',
+                data:{ tokenMintAddress: mintAddress},
+            }).then((res) => {
+                return res.data;
+            }).catch((err) => {
+                throw new Error(err)
+            });
+            return previousNftTransfers
+        } else {
+            console.log('Provide mint address!');
+        }
     }
 
     // Gets the data from the last transfer
     async lastTransfer(mintAddress: string) {
-        const lastTransfer = await tokiumAPI({
-            method: 'POST',
-            url: '/lastTransfer',
-            data:{ tokenMintAddress: mintAddress},
-        }).then((res) => {
-            return res.data;
-        }).catch((err) => {
-            throw new Error(err)
-        });
-        return lastTransfer
+        if (mintAddress) {
+            const lastTransfer = await tokiumAPI({
+                method: 'POST',
+                url: '/lastTransfer',
+                data:{ tokenMintAddress: mintAddress},
+            }).then((res) => {
+                return res.data;
+            }).catch((err) => {
+                throw new Error(err)
+            });
+            return lastTransfer
+        } else {
+            console.log('Provide Mint Address!')
+        }
     }
 
     // Verifies if a wallet has paid royalties on one or more NFTs
     async hasPaidRoyalties() {
+        if (this.walletAddress) {
+            const verified = await tokiumAPI({
+                method: 'POST',
+                url: '/hasPaidRoyalties',
+                data: {
+                        collectionLink: this.collectionLink,
+                        address: this.walletAddress,
+                    }
+            }).then((res) => {
+                return res.data;
+            }).catch((err) => {
+                throw new Error(err)
+            });
+            return verified
+        } else {
+            console.log('Provide Wallet Address!');
+        }
+    }
+
+  // Verifies if wallet has paid royalties on all nfts
+  async hasPaidAllRoyalties() {
+    if (this.walletAddress) { 
         const verified = await tokiumAPI({
             method: 'POST',
-            url: '/hasPaidRoyalties',
+            url: '/hasPaidAllRoyalties',
             data: {
-                    collectionLink: this.collectionLink,
-                    address: this.walletAddress,
-                }
+                address: this.walletAddress,
+                collectionLink: this.collectionLink
+            }
         }).then((res) => {
             return res.data;
         }).catch((err) => {
             throw new Error(err)
         });
         return verified
+    } else {
+        console.log('Provide Wallet Address!');
     }
-
-  // Verifies if wallet has paid royalties on all nfts
-  async hasPaidAllRoyalties() {
-    const verified = await tokiumAPI({
-        method: 'POST',
-        url: '/hasPaidAllRoyalties',
-        data: {
-            address: this.walletAddress,
-            collectionLink: this.collectionLink
-        }
-    }).then((res) => {
-        return res.data;
-    }).catch((err) => {
-        throw new Error(err)
-    });
-    return verified
 }
 
     
     // Get royalties details on all NFTs
     async getRoyaltyDetails() {
+        if (this.walletAddress) { 
         const details = await tokiumAPI({
             method: 'POST',
             url: '/royaltyDetails',
@@ -127,23 +144,30 @@ class Tokium {
         }).catch((err) => {
             throw new Error(err)
         });
-        return details
+            return details
+        } else {
+            console.log('Provide Wallet Address!');
+        }
     }
     
     // Get the royalty status on a token address
     async getRoyaltyOnMintAddress(mintAddress: string) {
-        const verified = await tokiumAPI({
-            method: 'POST',
-            url: '/royaltyOnMintAddress',
-            data: {
-                tokenMintAddress: mintAddress
-            }
-        }).then((res) => {
-            return res.data;
-        }).catch((err) => {
-            throw new Error(err)
-        });
-        return verified
+        if (mintAddress) {
+            const verified = await tokiumAPI({
+                method: 'POST',
+                url: '/royaltyOnMintAddress',
+                data: {
+                    tokenMintAddress: mintAddress
+                }
+            }).then((res) => {
+                return res.data;
+            }).catch((err) => {
+                throw new Error(err)
+            });
+            return verified    
+        } else {
+            console.log('Provide mint address!');
+        }
     }
 }
 
