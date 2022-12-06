@@ -1,6 +1,6 @@
 # TokiumSDK
 
-## Documentation: https://app.gitbook.com/o/pWoySu95v3jwWIHfPlhd/s/dnU905UnC9QbllSb5vD9/sdk-documentation
+Documentation: https://app.gitbook.com/o/pWoySu95v3jwWIHfPlhd/s/dnU905UnC9QbllSb5vD9/sdk-documentation
 
 ## SDK Structure
 

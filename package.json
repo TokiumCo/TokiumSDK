@@ -1,6 +1,6 @@
 {
   "name": "@tokium.co/tokiumsdk",
-  "version": "1.0.15",
+  "version": "1.1.4",
   "author": "Amy Qin",
   "license": "MIT",
   "homepage": "https://www.tokium.co/",
@@ -11,7 +11,9 @@
   "scripts": {
     "build": "tsc"
   },
-  "files": ["/dist"],
+  "files": [
+    "/dist"
+  ],
   "main": "./dist/index.js",
   "dependencies": {
     "axios": "^0.27.2"
