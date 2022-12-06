@@ -1,16 +1,64 @@
-import Axios from 'axios';
+const Axios = require('axios');
 
 const tokiumAPI = Axios.create({
     baseURL: 'https://api.tokium.co/'
 });
 
+const heliusAPI = Axios.create({
+    baseURL: "https://api.helius.xyz"
+})
+
 class Tokium {
     verified: boolean | undefined;
-    collectionLink: string;
-    walletAddress: string | undefined;
+    collectionURL: string;
+    walletAddress: string;
     constructor(collectionLink: string, walletAddress: string | undefined){
         this.collectionLink = collectionLink;
         this.walletAddress = walletAddress;
+    }
+    
+    
+    // Magic Eden collection address M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K
+    async getListings(collectionName: string, marketplaceAddress: string, HeliusApiKey: string) {
+        const listings = await heliusAPI({
+            method: 'GET',
+            url: `/v0/addresses/${marketplaceAddress}/nft-events?api-key=${HeliusApiKey}&type=NFT_LISTING`
+        }).then((res) => {
+            const collectionListings = res.data.filter(nft => nft.description.includes(collectionName) === true);
+            if (collectionListings.length == 0) return "No listings found at this time";
+            return collectionListings;
+        }).catch((err) => {
+            throw new Error(err);
+        });
+        return listings;
+    }
+
+    async getListedMagicEdenURL(collectionName: string, address: string) {
+        const listings = await this.getListings(collectionName, address);
+        const listedMEUrls = [];
+        for (const listing of listings) {
+            const mintAddress = listing.nfts[0]['mint'];
+            const nftIdRegex = /\#[0-9]{1,4}/;
+            const id = nftIdRegex.exec(listing.description)[0].replace('#', '');
+            const listedMEUrl = new URL(`https://magiceden.io/item-details/${mintAddress}?name=${collectionName}-$23${id}`);    
+            listedMEUrls.push(listedMEUrl)
+        }
+        return listedMEUrls;
+    }
+
+    async getMetadata(mintAddresses: object, HeliusApiKey: string) {
+        const metadata = await heliusAPI({
+            method: 'POST',
+            url: `/v0/tokens/metadata?api-key=${HeliusApiKey}`,
+            data: {
+                mintAccounts: mintAddresses
+            }
+        }).then((res) => {
+            return res.data;
+        }).catch((err) => {
+            throw new Error(err);
+        })
+        return metadata;
     }
 
     // Get the royalties of a collection
@@ -171,4 +219,4 @@ class Tokium {
     }
 }
 
-export { Tokium };
+module.exports({ Tokium });
