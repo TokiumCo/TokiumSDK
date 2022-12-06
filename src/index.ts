@@ -10,7 +10,7 @@ const heliusAPI = Axios.create({
 
 class Tokium {
     verified: boolean | undefined;
-    collectionURL: string;
+    collectionLink: string;
     walletAddress: string;
     constructor(collectionLink: string, walletAddress: string | undefined){
         this.collectionLink = collectionLink;
@@ -33,8 +33,8 @@ class Tokium {
         return listings;
     }
 
-    async getListedMagicEdenURL(collectionName: string, address: string) {
-        const listings = await this.getListings(collectionName, address);
+    async getListedMagicEdenURL(collectionName: string, address: string, HeliusAPIKey: string) {
+        const listings = await this.getListings(collectionName, address, HeliusAPIKey);
         const listedMEUrls = [];
         for (const listing of listings) {
             const mintAddress = listing.nfts[0]['mint'];
