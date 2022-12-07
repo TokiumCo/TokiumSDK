@@ -16,6 +16,8 @@
   ],
   "main": "./dist/index.js",
   "dependencies": {
+    "@solana/spl-token": "^0.3.6",
+    "@solana/web3.js": "^1.69.0",
     "axios": "^0.27.2"
   },
   "keywords": [

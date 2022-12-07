@@ -1,4 +1,8 @@
 const Axios = require('axios');
+const { Connection, PublicKey, SystemProgram, VersionedTransaction, TransactionMessage, LAMPORTS_PER_SOL, TransactionInstruction } = require('@solana/web3.js');
+const { createTransferCheckedInstruction, getAccount, getAssociatedTokenAddress, getMint } = require('@solana/spl-token');
+const buffer = require("buffer");
+
 
 const tokiumAPI = Axios.create({
     baseURL: 'https://api.tokium.co/'
@@ -7,6 +11,22 @@ const tokiumAPI = Axios.create({
 const heliusAPI = Axios.create({
     baseURL: "https://api.helius.xyz"
 })
+
+export type NFTProps = {
+    collection: string,
+    creators: object[],
+    image: string,
+    mintAddress: string,
+    tokenAddress: string,
+    name: string,
+    owner: string,
+    sellerFeeBasisPoints: string,
+}
+
+export type CreatorType = {
+    address: string,
+    share: number
+}
 
 class Tokium {
     verified: boolean | undefined;
@@ -216,6 +236,66 @@ class Tokium {
         } else {
             console.log('Provide mint address!');
         }
+    }
+    
+    paySolanaRoyalties = async (connection: typeof Connection, provider: any, nftObject: NFTProps, owingRoyalties: number | null) => {
+        window.Buffer = buffer.Buffer;
+        if (!provider) return;
+        if (!owingRoyalties) return;
+    
+        const creatorObject = nftObject.creators;
+        const Blockhash = (await connection.getLatestBlockhash('confirmed')).blockhash;
+    
+        const sourceAccount = new PublicKey(provider.publicKey);
+        const tokenMintAccount = new PublicKey(nftObject.mintAddress);
+        const tokenAccount = await getAssociatedTokenAddress(tokenMintAccount, sourceAccount);
+    
+        const tokenAccountStatus = await getAccount(connection, tokenAccount);
+        const mintAccountStatus = await getMint(connection, tokenMintAccount);
+    
+        const mintDecimals = mintAccountStatus.decimals;
+    
+        const tokenAmount = BigInt(1);
+        if (tokenAmount > tokenAccountStatus.amount) throw new Error('Insufficient Tokens');
+    
+        const instructions: typeof TransactionInstruction[] = [];
+    
+        for (const creator of creatorObject) {
+            const creatorPublicKey = new PublicKey((creator as CreatorType).address);
+            const creatorSharePercentage = ((creator as CreatorType).share)/100;
+            const creatorRoyalty = owingRoyalties * creatorSharePercentage;
+            instructions.push(
+                SystemProgram.transfer({
+                  fromPubkey: sourceAccount,
+                  toPubkey: creatorPublicKey,
+                  lamports: LAMPORTS_PER_SOL * creatorRoyalty,
+                })
+            );
+        }
+    
+        const transferInstruction = createTransferCheckedInstruction(
+            tokenAccount,
+            tokenMintAccount,
+            tokenAccount,
+            sourceAccount,
+            tokenAmount,
+            mintDecimals
+        )
+    
+        instructions.push(transferInstruction);
+    
+        const V0Message = new TransactionMessage({
+            payerKey: sourceAccount,
+            recentBlockhash: Blockhash,
+            instructions: instructions
+        }).compileToV0Message([]);
+    
+        const royalties_transaction = new VersionedTransaction(V0Message);
+    
+        const { signature } = await provider.signAndSendTransaction(royalties_transaction, {maxRetries: 5});
+        const status = await connection.getSignatureStatus(signature);
+    
+        return status;
     }
 }
 
