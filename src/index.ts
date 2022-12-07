@@ -299,4 +299,4 @@ class Tokium {
     }
 }
 
-module.exports({ Tokium });
+module.exports = { Tokium };
