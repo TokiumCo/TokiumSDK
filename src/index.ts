@@ -5,7 +5,8 @@ const buffer = require("buffer");
 
 
 const tokiumAPI = Axios.create({
-    baseURL: 'https://api.tokium.co/'
+  baseURL: 'https://api.tokium.co',
+  
 });
 
 const heliusAPI = Axios.create({
@@ -82,7 +83,7 @@ class Tokium {
     }
 
     paySolanaRoyalties = async (connection: typeof Connection, provider: any, nftObject: NFTProps, owingRoyalties: number | null) => {
-        window.Buffer = buffer.Buffer;
+        window['Buffer'] = buffer.Buffer;
         if (!provider) return;
         if (!owingRoyalties) return;
     
@@ -146,6 +147,9 @@ class Tokium {
         const collectionRoyalties = await tokiumAPI({
             method: 'POST',
             url: '/getRoyalties',
+            headers: {
+              'Content-Type': 'application/json',
+            },
             data:{
                 collectionLink: this.collectionLink,
             }
@@ -163,6 +167,9 @@ class Tokium {
             const verified = await tokiumAPI({
                 method: 'POST',
                 url: '/ownedCollectionNFTs',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
                 data: {
                     address: this.walletAddress,
                     collectionLink: this.collectionLink
@@ -184,6 +191,9 @@ class Tokium {
             const previousNftTransfers = await tokiumAPI({
                 method: 'POST',
                 url: '/previousNftTransfers',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
                 data:{ tokenMintAddress: mintAddress},
             }).then((res) => {
                 return res.data;
@@ -202,6 +212,9 @@ class Tokium {
             const lastTransfer = await tokiumAPI({
                 method: 'POST',
                 url: '/lastTransfer',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
                 data:{ tokenMintAddress: mintAddress},
             }).then((res) => {
                 return res.data;
@@ -220,6 +233,9 @@ class Tokium {
             const verified = await tokiumAPI({
                 method: 'POST',
                 url: '/hasPaidRoyalties',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
                 data: {
                         collectionLink: this.collectionLink,
                         address: this.walletAddress,
@@ -241,6 +257,9 @@ class Tokium {
         const verified = await tokiumAPI({
             method: 'POST',
             url: '/hasPaidAllRoyalties',
+            headers: {
+              'Content-Type': 'application/json',
+            },
             data: {
                 address: this.walletAddress,
                 collectionLink: this.collectionLink
@@ -263,6 +282,9 @@ class Tokium {
         const details = await tokiumAPI({
             method: 'POST',
             url: '/royaltyDetails',
+            headers: {
+              'Content-Type': 'application/json',
+            },
             data: {
                 address: this.walletAddress,
                 collectionLink: this.collectionLink
@@ -284,6 +306,9 @@ class Tokium {
             const verified = await tokiumAPI({
                 method: 'POST',
                 url: '/royaltyOnMintAddress',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
                 data: {
                     tokenMintAddress: mintAddress
                 }
