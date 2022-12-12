@@ -99,22 +99,23 @@ class Tokium {
     
         const mintDecimals = mintAccountStatus.decimals;
     
-        const tokenAmount = BigInt(1);
+        const tokenAmount: bigint = BigInt(1);
         if (tokenAmount > tokenAccountStatus.amount) throw new Error('Insufficient Tokens');
     
         const instructions: typeof TransactionInstruction[] = [];
     
         for (const creator of creatorObject) {
-            const creatorPublicKey = new PublicKey((creator as CreatorType).address);
-            const creatorSharePercentage = ((creator as CreatorType).share)/100;
-            const creatorRoyalty = owingRoyalties * creatorSharePercentage;
-            instructions.push(
-                SystemProgram.transfer({
-                  fromPubkey: sourceAccount,
-                  toPubkey: creatorPublicKey,
-                  lamports: LAMPORTS_PER_SOL * creatorRoyalty,
-                })
-            );
+          const creatorPublicKey = new PublicKey((creator as CreatorType).address);
+          const creatorSharePercentage = ((creator as CreatorType).share)/100;
+          const creatorRoyalty = owingRoyalties * creatorSharePercentage;
+          const lamportAmount = Math.round(LAMPORTS_PER_SOL * creatorRoyalty);
+          instructions.push(
+              SystemProgram.transfer({
+                fromPubkey: sourceAccount,
+                toPubkey: creatorPublicKey,
+                lamports:lamportAmount
+              })
+          );
         }
     
         const transferInstruction = createTransferCheckedInstruction(
